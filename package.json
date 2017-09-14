@@ -1,6 +1,6 @@
 {
   "name": "redux-creator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A series of helper methods to reduce the boilerplate of Redux",
   "main": "./src/redux-creator",
   "engines": {
