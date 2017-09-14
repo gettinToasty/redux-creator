@@ -1,14 +1,14 @@
-#Redux Helpers
+# Redux Helpers
 
 This is a lightweight library designed to help reduce the amount of boilerplate usually required in Redux workflows. There are several easy to use functions that can help reduce the size of your redux/ducks files by dozens of lines!
 
-#Usage
+# Usage
 
-##`createAction`
+## `createAction`
 
 This is a fairly straightforward function that takes an action type as a method and returns a redux function. The only opinion it holds is that the data passed into the action body is referred to as payload.
 
-###Example
+### Example
 ```js
 const UPDATE_MESSAGE = 'messages/UPDATE_MESSAGE';
 
@@ -19,11 +19,11 @@ export const updateMessage = createAction(UPDATE_MESSAGE);
 }) */
 ```
 
-##`createThunk`
+## `createThunk`
 
 Another easy to use function when making API calls in your redux cycle. This function takes an API util function and an action as arguments, and returns the default 'thunk' pattern of asynchronous actions. Thunks return promisable objects by default, and this helper is no different.
 
-###Example
+### Example
 ```js
 export const sendMessage = createThunk(MessageAPI.send, updateMessage);
 /* => (data) => (dispatch) => {
@@ -52,21 +52,21 @@ export const sendMessage = createThunk(MessageAPI.send, updateMessage, updateMes
 } */
 ```
 
-##`configureStore`
+## `configureStore`
 
 This is a helper method which takes in the root reducer in your redux and an array of middleware and creates a store with those middlewares applied.
 
-###Example
+### Example
 ```js
 export default configureStore(RootReducer, [thunk])
 // => (preloadedState = {}) => createStore(RootReducer, preloadedState, applyMiddleware(thunk))
 ```
 
-##`createReducer`
+## `createReducer`
 
 This is the most complicated of the helper functions but also has the biggest payoff. Reducers are often bulky and hard to read, and `createReducer` aims to create a prettier looking reducer that's much easier to grok. This is the most opinionated of the helper methods, and a somewhat specific syntax must be followed in order for it to properly work.
 
-###Example
+### Example
 ```js
 const UPDATE_MESSAGE = 'messages/UPDATE_MESSAGE';
 const UPDATE_MESSAGE_ERRORS = 'messages/UPDATE_MESSAGE_ERRORS';
@@ -89,7 +89,7 @@ export default createReducer(messageReducerActions, initialState);
 
 The pattern is as follows: `createReducer` accepts an Object of action types as keys and JSON strings as values. The JSON strings use the same syntax as the `update` method from the `immutability-helper` library, which is used internally as shown, but the strings must be valid JSON to work. After calling for an `update` operation like `$set` or `$merge`, the value of that key must be marked as `payload`. Because the value is just a string it won't throw any invalid JSON syntax errors until it is parsed by `createReducer`, at which time `payload` will be a defined parameter. This is also the reason `createAction` uses the naming convention of `payload` on its action data; `createReducer` relies on `action.payload` to function properly.
 
-##MIT License
+## MIT License
 
 Copyright (c) 2017 Sean Beyer
 
