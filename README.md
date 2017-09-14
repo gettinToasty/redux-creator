@@ -1,6 +1,14 @@
-# Redux Helpers
+# Redux Creator
 
 This is a lightweight library designed to help reduce the amount of boilerplate usually required in Redux workflows. There are several easy to use functions that can help reduce the size of your redux/ducks files by dozens of lines!
+
+# Installation
+
+Redux Creator is incredibly easy to install, simply run one of these lines in your terminal:
+
+NPM: `npm install redux-creator --save`
+
+Yarn: `yarn add redux-creator`
 
 # Usage
 
