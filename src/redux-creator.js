@@ -7,8 +7,7 @@ export const createAction = ACTION_TYPE => payload => ({
 });
 
 export const createThunk =
-  (apiCall, action, errorAction) => data => dispatch => {
-    const errorHandler = errorAction ? errorAction : () => {};
+  (apiCall, action, errorHandler = () => {}) => data => dispatch => {
     return apiCall(data)
       .then(resp => {
         dispatch(action(resp));
@@ -26,10 +25,8 @@ export const configureStore =
     createStore(Reducer, preloadedState, applyMiddleware(...middlewares))
 );
 
-// { [UPDATE_MESSAGE]: '{ "currentUser": { "message": { "$set": payload } }'
-
 export const createReducer = 
-  (actionTypes, initialState) => (state = initialState, action) => {
+  (actionTypes, initialState = {}) => (state = initialState, action) => {
     let reducerObj = {};
     Object.keys(actionTypes).forEach((actionType) => {
       reducerObj[actionType] = (payload) => (
