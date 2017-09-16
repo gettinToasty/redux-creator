@@ -19,7 +19,6 @@ export const createThunk =
       });
 };
 
-
 export const configureStore =
   (Reducer, middlewares) => (preloadedState = {}) => (
     createStore(Reducer, preloadedState, applyMiddleware(...middlewares))
