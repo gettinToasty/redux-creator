@@ -1,2 +1,2 @@
-import { configureStore } from './src/redux-creator';
+import { configureStore } from '../src/redux-creator';
 import { stores } from './fixtures';

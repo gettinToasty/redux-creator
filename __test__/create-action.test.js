@@ -1,4 +1,4 @@
-import { createAction } from './src/redux-creator';
+import { createAction } from '../src/redux-creator';
 import { actions } from './fixtures';
 
 const {
@@ -16,7 +16,7 @@ describe('createAction :: Action without payload', () => {
   });
 
   it('matches a payload-less action fixture', () => {
-    expect(action).toEqual(noPayloadAction);
+    expect(action()).toEqual(noPayloadAction());
   });
 
   it('returns an action without a payload', () => {
@@ -32,7 +32,7 @@ describe('createAction :: Action with payload', () => {
   });
 
   it('matches a payload action fixture', () => {
-    expect(action).toEqual(payloadAction);
+    expect(action(actionPayload)).toEqual(payloadAction(actionPayload));
   });
 
   it('returns an action with a payload', () => {

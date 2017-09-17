@@ -1,4 +1,4 @@
-import { createThunk } from './src/redux-creator';
+import { createThunk } from '../src/redux-creator';
 import { thunks } from './fixtures';
 
 const {

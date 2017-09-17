@@ -1,2 +1,2 @@
-import { createReducer } from './src/redux-creator';
+import { createReducer } from '../src/redux-creator';
 import { reducers } from './fixtures';
