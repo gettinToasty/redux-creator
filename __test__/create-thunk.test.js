@@ -1,5 +1,11 @@
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import nock from 'nock';
+
 import { createThunk } from '../src/redux-creator';
 import { thunks } from './fixtures';
+
+const mockStore = configureMockStore([thunk]);
 
 const {
   api,
@@ -9,34 +15,75 @@ const {
   thunkFixtureErrors,
   thunkFixtureData,
   actionPayload,
+  UPDATE_MESSAGE,
 } = thunks;
 
 describe('createThunk :: Dataless thunks', () => {
-  let thunk;
+  let thunkTest, store;
 
   beforeEach(() => {
-    thunk = createThunk(api.get, payloadAction, errorAction);
+    thunkTest = createThunk(api.get, payloadAction, errorAction);
+    store = mockStore({ messages: '' });
   });
 
-  it('returns a valid thunk', () => {
-    expect(thunk).toEqual(thunkFixtureErrors);
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
+  it('returns a functioning thunk', () => {
+    nock('http://example.com/')
+      .get('/messages')
+      .reply(200, { payload: 'hello' });
+
+    const expectedActions = [
+      { type: UPDATE_MESSAGE }
+    ];
+
+    store.dispatch(thunkTest()).then(() => {
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
+  it('handles errors properly', () => {
+    nock('http://example.com')
+      .get('/messages')
+      .reply(500, { err: 'Error 500' });
+
+    thunkTest();
   });
 
   it('works without an error handler', () => {
-    thunk = createThunk(api.get, payloadAction);
+    thunkTest = createThunk(api.get, payloadAction);
 
-    expect(thunk).toEqual(thunkFixture);
+    expect(thunkTest()).not.toThrow();
   });
 });
 
 describe('createThunk :: Thunks with data', () => {
-  let thunk;
+  let thunkTest, store;
 
   beforeEach(() => {
-    thunk = createThunk(api.update, payloadAction, errorAction);
+    thunkTest = createThunk(api.update, payloadAction, errorAction);
+    store = mockStore({ messages: '' });
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
   });
 
   it('returns a valid thunk', () => {
-    expect(thunk(actionPayload)).toEqual(thunkFixtureData(actionPayload));
-  });
+    nock('http://example.com/')
+      .post('/messages')
+      .reply(200, { payload: 'hello' });
+
+    const expectedActions = [
+      {
+        type: UPDATE_MESSAGE,
+        payload: { message: 'hello' }
+      }
+    ];
+
+    store.dispatch(thunkTest({ message: 'hello' })).then(() => {
+      expect(store.getActions()).toEqual(expectedActions);
+    });  });
 });

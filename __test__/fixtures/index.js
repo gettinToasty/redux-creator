@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const UPDATE_MESSAGE = 'UPDATE_MESSAGE';
 
 const actionPayload = { message: 'hello' };
@@ -12,11 +14,13 @@ const payloadAction = (payload) => ({
 });
 
 const api = {
-  get: () => Promise.resolve(),
-  update: data => Promise.resolve(data),
+  get: () => axios.get('/messages'),
+  update: data => axios.post('/messages', data),
 };
 
-const errorAction = (err) => console.log(err);
+const errorAction = (err) => {
+  expect(err.err).toEqual('Error 500');
+};
 
 const thunkFixtureErrors = data => dispatch => {
   const errorHandler = errorAction;
@@ -72,6 +76,7 @@ export const thunks = {
   thunkFixtureData,
   payloadAction,
   actionPayload,
+  UPDATE_MESSAGE,
 };
 
 export const reducers = {
