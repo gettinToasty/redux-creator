@@ -11,9 +11,6 @@ const {
   api,
   errorAction,
   payloadAction,
-  thunkFixture,
-  thunkFixtureErrors,
-  thunkFixtureData,
   actionPayload,
   UPDATE_MESSAGE,
 } = thunks;
@@ -79,11 +76,11 @@ describe('createThunk :: Thunks with data', () => {
     const expectedActions = [
       {
         type: UPDATE_MESSAGE,
-        payload: { message: 'hello' }
+        payload: actionPayload,
       }
     ];
 
-    store.dispatch(thunkTest({ message: 'hello' })).then(() => {
+    store.dispatch(thunkTest(actionPayload)).then(() => {
       expect(store.getActions()).toEqual(expectedActions);
     });  });
 });
