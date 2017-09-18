@@ -22,6 +22,12 @@ const errorAction = (err) => {
   expect(err.err).toEqual('Error 500');
 };
 
+const initialState = { message: '' };
+
+const actionTypes = {
+  [UPDATE_MESSAGE]: '{ "message": { "$set": payload } }',
+};
+
 export const actions = {
   UPDATE_MESSAGE,
   actionPayload,
@@ -38,7 +44,9 @@ export const thunks = {
 };
 
 export const reducers = {
-
+  actionTypes,
+  initialState,
+  payloadAction,
 };
 
 export const stores = {

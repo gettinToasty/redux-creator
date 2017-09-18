@@ -1,4 +1,4 @@
-import { createAction } from '../src/redux-creator';
+import { createAction } from '../src';
 import { actions } from './fixtures';
 
 const {

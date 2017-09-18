@@ -2,7 +2,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import nock from 'nock';
 
-import { createThunk } from '../src/redux-creator';
+import { createThunk } from '../src';
 import { thunks } from './fixtures';
 
 const mockStore = configureMockStore([thunk]);

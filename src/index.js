@@ -20,17 +20,26 @@ export const createThunk =
 };
 
 export const configureStore =
-  (Reducer, middlewares) => (preloadedState = {}) => (
+  (Reducer, middlewares = []) => (preloadedState = {}) => (
     createStore(Reducer, preloadedState, applyMiddleware(...middlewares))
 );
+
+const parseActionString = (actionString, payload) => {
+  const modifiedString = actionString.replace(
+    /[^"]payload[^"]/,
+    JSON.stringify(payload)
+  );
+  return JSON.parse(modifiedString);
+};
 
 export const createReducer = 
   (actionTypes, initialState = {}) => (state = initialState, action) => {
     let reducerObj = {};
     Object.keys(actionTypes).forEach((actionType) => {
       reducerObj[actionType] = (payload) => (
-        update(state, JSON.parse(actionTypes[actionType]))
+        update(state, parseActionString(actionTypes[actionType], payload))
       );
     });
-    return reducerObj[action.type](action.payload) || state;
+    return reducerObj[action.type] ?
+      reducerObj[action.type](action.payload) : state;
 };
