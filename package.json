@@ -1,6 +1,6 @@
 {
   "name": "redux-creator",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "homepage": "https://github.com/gettinToasty/redux-creator",
   "bugs": "https://github.com/gettinToasty/redux-creator/issues",
   "description": "A series of helper methods to reduce the boilerplate of Redux",
@@ -20,7 +20,7 @@
     "function",
     "method"
   ],
-  "main": "./dist/redux-creator",
+  "main": "./dist/index",
   "engines": {
     "node": "6.2.1",
     "npm": "3.9.3"
