@@ -95,7 +95,11 @@ export default createReducer(messageReducerActions, initialState);
 */
 ```
 
-The pattern is as follows: `createReducer` accepts an Object of action types as keys and JSON strings as values. The JSON strings use the same syntax as the `update` method from the `immutability-helper` library, which is used internally as shown, but the strings must be valid JSON to work. After calling for an `update` operation like `$set` or `$merge`, the value of that key must be marked as `payload`. Because the value is just a string it won't throw any invalid JSON syntax errors until it is parsed by `createReducer`, at which time `payload` will be a defined parameter. This is also the reason `createAction` uses the naming convention of `payload` on its action data; `createReducer` relies on `action.payload` to function properly.
+The pattern is as follows: `createReducer` accepts an Object of action types as keys and JSON strings as values. The JSON strings use the same syntax as the `update` method from the `immutability-helper` library, which is used internally as shown, but the strings must be valid JSON to work. After calling for an `update` operation like `$set` or `$merge`, the value of that key must be marked as `$payload`. Because the value is just a string it won't throw any invalid JSON syntax errors until it is parsed by `createReducer`, at which time `$payload` will be substituted with the proper value. This is also the reason `createAction` uses the naming convention of `$payload` on its action data; `createReducer` relies on `action.payload` to function properly.
+
+### Handling Apply
+
+If you wish to use `immutability-helper`'s built-in `$apply` method it is important to note the format of the callback. `createReducer` expects a callback that recieves the payload as it's only argument, so be sure to make closures of your other parameters if they are required by wrapping the callback in a function that only takes in the payload.
 
 ## MIT License
 

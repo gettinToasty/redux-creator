@@ -1,6 +1,11 @@
 import { createReducer } from '../src';
 import { reducers } from './fixtures';
-const { actionTypes, initialState, payloadAction } = reducers;
+const {
+  actionTypes,
+  initialState,
+  payloadAction,
+  applyAction,
+} = reducers;
 
 describe('createReducer', () => {
   let reducer;
@@ -16,6 +21,13 @@ describe('createReducer', () => {
   it('should handle an action', () => {
     expect(reducer(undefined, payloadAction('hello'))).toEqual({
       message: 'hello'
+    });
+  });
+
+  it('should handle $apply', () => {
+    expect(reducer(undefined, applyAction(4))).toEqual({
+      message: '',
+      value: 8,
     });
   });
 });
