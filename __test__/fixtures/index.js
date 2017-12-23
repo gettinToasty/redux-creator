@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const UPDATE_MESSAGE = 'UPDATE_MESSAGE';
+const DOUBLE_VALUE = 'DOUBLE_VALUE';
 
 const actionPayload = { message: 'hello' };
 
@@ -22,10 +23,21 @@ const errorAction = (err) => {
   expect(err.err).toEqual('Error 500');
 };
 
+const applyAction = (payload) => ({
+  type: DOUBLE_VALUE,
+  payload
+});
+
 const initialState = { message: '' };
 
+const doubleValue = (payload) => payload * 2;
+
 const actionTypes = {
-  [UPDATE_MESSAGE]: '{ "message": { "$set": payload } }',
+  [UPDATE_MESSAGE]: '{ "message": { "$set": $payload } }',
+  [DOUBLE_VALUE]: {
+    string: '{ "value": { "$apply": $callback } }',
+    callback: doubleValue,
+  },
 };
 
 export const actions = {
@@ -47,6 +59,7 @@ export const reducers = {
   actionTypes,
   initialState,
   payloadAction,
+  applyAction,
 };
 
 export const stores = {
