@@ -1,3 +1,8 @@
+# New in 0.2.0
+* `createThunk` now supports a `deserializer` function to parse response data
+* `createThunk` and `createReducer` now require strong parameters
+* `$apply` now properly applies to the current state value instead of the payload while using `createReducer`
+
 # Redux Creator
 
 This is a lightweight library designed to help reduce the amount of boilerplate usually required in Redux workflows. There are several easy to use functions that can help reduce the size of your redux/ducks files by dozens of lines!
@@ -33,21 +38,28 @@ Another easy to use function when making API calls in your redux cycle. This fun
 
 ### Example
 ```js
-export const sendMessage = createThunk(MessageAPI.send, updateMessage);
+export const sendMessage = createThunk({
+  api: MessageAPI.send,
+  action: updateMessage,
+});
 /* => (data) => (dispatch) => {
   MessageAPI.send(data)
-    .then((resp) => {
+    .then((resp) => (
       dispatch(updateMessage(resp));
       return resp;
     })
-} */
+) */
 ```
 
-`createThunk` can also be used to handle errors, if a third argument is passed in as an error handler. This works by simply substituting a no-op function if there is no third argument:
+`createThunk` can also be used to handle errors, with an `errorHandler` function:
 
 ```js
-export const sendMessage = createThunk(MessageAPI.send, updateMessage, updateMessageErrors);
-/* => (data) => (dispatch) => {
+export const sendMessage = createThunk({
+  api: MessageAPI.send,
+  action: updateMessage,
+  errorHandler: updateMessageErrors
+});
+/* => (data) => (dispatch) => (
   MessageAPI.send(data)
     .then((resp) => {
       dispatch(updateMessage(resp));
@@ -57,7 +69,25 @@ export const sendMessage = createThunk(MessageAPI.send, updateMessage, updateMes
       dispatch(updateMessageErrors(err));
       return err;
     })
-} */
+) */
+```
+
+An optional `deserializer` layer can also be applied to `createThunk` if you are expecting to recieve API data that requires parsing. Deserializers should be provided as functions:
+
+```js
+export const sendMessage = createThunk({
+  api: MessageAPI.send,
+  action: updateMessage,
+  deserializer: parseMessageResponse
+});
+/* => (data) => (dispatch) => (
+  MessageAPI.send(data)
+    .then((resp) => parseMessageResponse(resp))
+    .then((resp) => {
+      dispatch(updateMessage(resp));
+      return resp;
+    })
+) */
 ```
 
 ## `configureStore`
@@ -80,11 +110,14 @@ const UPDATE_MESSAGE = 'messages/UPDATE_MESSAGE';
 const UPDATE_MESSAGE_ERRORS = 'messages/UPDATE_MESSAGE_ERRORS';
 
 const messageReducerActions = {
-  [UPDATE_MESSAGE]: '{ "currentUser": { "message": { "$set": payload } } }',
-  [UPDATE_MESSAGE_ERRORS]: '{ "currentUser": { "errors": { "message": { "$set": payload } } } }'
+  [UPDATE_MESSAGE]: '{ "currentUser": { "message": { "$set": $payload } } }',
+  [UPDATE_MESSAGE_ERRORS]: '{ "currentUser": { "errors": { "message": { "$set": $payload } } } }'
 }
 
-export default createReducer(messageReducerActions, initialState);
+export default createReducer({
+  reducerCases: messageReducerActions,
+  initialState
+});
 /* => (state = initialState, action) => {
   let reducerObj = {
     'messages/UPDATE_MESSAGE': (payload) => update(state, { currentUser: { message: { $set: payload } }),
@@ -99,7 +132,7 @@ The pattern is as follows: `createReducer` accepts an Object of action types as 
 
 ### Handling Apply
 
-If you wish to use `immutability-helper`'s built-in `$apply` method it is important to note the format of the callback. `createReducer` expects a callback that recieves the payload as it's only argument, so be sure to make closures of your other parameters if they are required by wrapping the callback in a function that only takes in the payload.
+If you wish to use `immutability-helper`'s built-in `$apply` method it is important to note the format of the reducer case. Instead of the typical JSON string, `createReducer` expects an object with the keys `string`, for the JSON string including `$callback` instead of `$payload`, and `callback`, which is the actual callback function.
 
 ## MIT License
 

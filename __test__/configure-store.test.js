@@ -6,7 +6,10 @@ describe('createStore', () => {
   let reducer;
 
   beforeEach(() => {
-    reducer = createReducer(reducers.actionTypes, {});
+    reducer = createReducer({
+      reducerCases: reducers.reducerCases,
+      initialState: {},
+    });
   });
 
   it('accepts middleware', () => {
