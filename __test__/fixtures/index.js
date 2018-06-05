@@ -23,16 +23,15 @@ const errorAction = (err) => {
   expect(err.err).toEqual('Error 500');
 };
 
-const applyAction = (payload) => ({
+const applyAction = () => ({
   type: DOUBLE_VALUE,
-  payload
 });
 
-const initialState = { message: '' };
+const initialState = { message: '', value: 4 };
 
-const doubleValue = (payload) => payload * 2;
+const doubleValue = (currentVal) => currentVal * 2;
 
-const actionTypes = {
+const reducerCases = {
   [UPDATE_MESSAGE]: '{ "message": { "$set": $payload } }',
   [DOUBLE_VALUE]: {
     string: '{ "value": { "$apply": $callback } }',
@@ -56,7 +55,7 @@ export const thunks = {
 };
 
 export const reducers = {
-  actionTypes,
+  reducerCases,
   initialState,
   payloadAction,
   applyAction,

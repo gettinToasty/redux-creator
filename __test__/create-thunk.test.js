@@ -19,7 +19,11 @@ describe('createThunk :: Dataless thunks', () => {
   let thunkTest, store;
 
   beforeEach(() => {
-    thunkTest = createThunk(api.get, payloadAction, errorAction);
+    thunkTest = createThunk({
+      api: api.get,
+      action: payloadAction,
+      errorHandler: errorAction,
+    });
     store = mockStore({ messages: '' });
   });
 
@@ -50,9 +54,33 @@ describe('createThunk :: Dataless thunks', () => {
   });
 
   it('works without an error handler', () => {
-    thunkTest = createThunk(api.get, payloadAction);
+    thunkTest = createThunk({
+      api: api.get, action: payloadAction
+    });
 
     expect(thunkTest()).not.toThrow();
+  });
+
+  it('deserializes properly', () => {
+    nock('http://example.com/')
+      .get('/messages')
+      .reply(200, { data: { body: ['hello'] } });
+
+    const deserializer = resp => resp.data.body[0];
+
+    thunkTest = createThunk({
+      api: api.get,
+      action: payloadAction,
+      deserializer,
+    });
+
+    const expectedActions = [
+      { type: UPDATE_MESSAGE }
+    ];
+
+    store.dispatch(thunkTest()).then(() => {
+      expect(store.getActions()).toEqual(expectedActions);
+    });
   });
 });
 
@@ -60,7 +88,11 @@ describe('createThunk :: Thunks with data', () => {
   let thunkTest, store;
 
   beforeEach(() => {
-    thunkTest = createThunk(api.update, payloadAction, errorAction);
+    thunkTest = createThunk({
+      api: api.update,
+      action: payloadAction,
+      errorHandler: errorAction,
+    });
     store = mockStore({ messages: '' });
   });
 
