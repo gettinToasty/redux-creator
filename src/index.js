@@ -1,29 +1,27 @@
 import { createStore, applyMiddleware } from 'redux';
 import update from 'immutability-helper';
 
-export const createAction = ACTION_TYPE => payload => ({
-  type: ACTION_TYPE,
-  payload,
+export const createAction = (ACTION_TYPE) => (payload) => ({
+  type: ACTION_TYPE, payload
 });
 
 const noop = (state) => state;
+const deserialize = (deserializer) => (resp) => deserializer(resp);
+const dispatchAction = (dispatch, action) => (resp) => {
+  dispatch(action(resp));
+  return resp;
+};
 
 export const createThunk = ({
   api,
   action,
   errorHandler = noop,
-  deserializer = noop
-}) => data => dispatch => {
+  deserializer = noop,
+}) => (data) => (dispatch) => {
     return api(data)
-      .then(resp => deserializer(resp))
-      .then(resp => {
-        dispatch(action(resp));
-        return resp;
-      })
-      .catch(err => {
-        dispatch(errorHandler(err));
-        return err;
-      });
+      .then(deserialize(deserializer))
+      .then(dispatchAction(dispatch, action))
+      .catch(dispatchAction(dispatch, errorHandler));
 };
 
 export const configureStore =
@@ -33,11 +31,7 @@ export const configureStore =
 
 const digAndSet = (obj, keys, value) => {
   let next = keys.shift();
-  if (keys.length > 0) {
-    obj[next] = digAndSet(obj[next], keys, value);
-  } else {
-    obj[next] = value;
-  }
+  obj[next] = keys.length > 0 ? digAndSet(obj[next], keys, value) : value;
   return obj;
 };
 
@@ -47,14 +41,13 @@ const objectifyJSON = (string, value) => {
   return digAndSet(obj, keys.slice(0, keys.length - 1), value);
 };
 
-const parseActionObj = (actionObj, payload) => {
-  return objectifyJSON(actionObj.string, actionObj.callback);
-};
+const parseActionObj = ({ string, callback }, payload) => (
+  objectifyJSON(string, callback)
+);
 
 const parseActionString = (actionString, payload) => {
   const modifiedString = actionString.replace(
-    /\$payload/,
-    JSON.stringify(payload)
+    /\$payload/, JSON.stringify(payload)
   );
   return JSON.parse(modifiedString);
 };
@@ -67,13 +60,14 @@ const parseAction = (action, payload) => (
 export const createReducer = ({
   reducerCases,
   initialState = {}
-}) => (state = initialState, action) => {
-    let reducerObj = {};
-    Object.keys(reducerCases).forEach((actionType) => {
-      reducerObj[actionType] = (payload) => (
-        update(state, parseAction(reducerCases[actionType], payload))
-      );
-    });
-    return reducerObj[action.type] ?
-      reducerObj[action.type](action.payload) : state;
+}) => {
+  const reducerObj = {};
+  Object.keys(reducerCases).forEach((actionType) => {
+    reducerObj[actionType] = (state, payload) => (
+      update(state, parseAction(reducerCases[actionType], payload))
+    );
+  });
+  return (state = initialState, { type, payload }) => (
+    reducerObj[type] ? reducerObj[type](state, payload) : state
+  );
 };
