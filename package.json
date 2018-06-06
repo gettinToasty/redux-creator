@@ -1,6 +1,6 @@
 {
   "name": "redux-creator",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/gettinToasty/redux-creator",
   "bugs": "https://github.com/gettinToasty/redux-creator/issues",
   "description": "A series of helper methods to reduce the boilerplate of Redux",
@@ -21,10 +21,7 @@
     "method"
   ],
   "main": "./dist/index",
-  "engines": {
-    "node": "6.2.1",
-    "npm": "3.9.3"
-  },
+  "engines": { "node": "6.2.1", "npm": "3.9.3" },
   "scripts": {
     "test": "jest",
     "build": "babel src --presets babel-preset-es2015 --out-dir dist"
@@ -37,10 +34,7 @@
   },
   "jest": {
     "scriptPreprocessor": "./node_modules/babel-jest",
-    "testFileExtensions": [
-      "es6",
-      "js"
-    ]
+    "testFileExtensions": ["es6", "js"]
   },
   "devDependencies": {
     "axios": "^0.16.2",
